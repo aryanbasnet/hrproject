@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HR Dashboard — HRMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --accent:#6366f1;
+    --accent-2:#06b6d4;
+    --muted:#64748b;
+    --card:#fff;
+    --radius:12px;
+    --shadow:0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg:0 10px 40px rgba(0,0,0,0.1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+    color:#0f172a;
+    overflow-x:hidden;
+  }
+
+
+  header{
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(10px);
+    padding:20px 40px;
+    box-shadow:var(--shadow);
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+  .header-content{
+    max-width:1800px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+  }
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{
+    width:50px;
+    height:50px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--accent),#9333ea);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight:800;
+    font-size:20px;
+    box-shadow:0 8px 24px rgba(99,102,241,0.3);
+  }
+  .brand h1{font-size:22px;font-weight:800;color:#1e293b}
+  .brand p{font-size:13px;color:var(--muted);margin-top:2px}
+  .user{display:flex;gap:12px;align-items:center}
+  .avatar{
+    width:44px;
+    height:44px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#eef2ff,#e0e7ff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    color:var(--accent);
+    font-size:16px;
+  }
+  .btn{
+    padding:10px 18px;
+    border-radius:10px;
+    border:0;
+    font-weight:700;
+    cursor:pointer;
+    transition:all .2s;
+    font-size:14px;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn:active{transform:scale(0.98)}
+  .btn-ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+  .btn-ghost:hover{background:var(--accent);color:#fff}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent),#9333ea);
+    color:#fff;
+    box-shadow:0 8px 20px rgba(99,102,241,0.3);
+  }
+
+ 
+  .wrap{
+    max-width:1400px;
+    margin:0 auto;
+    padding:20px;
+  }
+
+  
+  .main-grid{
+    display:grid;
+    grid-template-columns: 1.2fr 1fr; /* wider left column */
+    gap:16px;
+    align-items:start;
+  }
+
+  .left-section{ display:grid; gap:16px }
+
+  .left-row{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px }
+  .left-row.two{ grid-template-columns: 1fr 1fr }
+
+  .right-section{ display:grid; gap:16px }
+  
+  .card{
+    padding:18px;
+    border-radius:14px;
+    background:var(--card);
+    box-shadow:var(--shadow);
+    transition:all .3s;
+  }
+  .card:hover{box-shadow:var(--shadow-lg)}
+  
+  .card h3{
+    margin:0 0 12px;
+    font-size:18px;
+    font-weight:800;
+    color:#1e293b;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  
+  .stats{display:grid;gap:14px}
+  .stat-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#f8fafc,#eef2ff);
+    border:2px solid #e0e7ff;
+    transition:all .2s;
+  }
+  .stat-item:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(99,102,241,0.15);
+  }
+  .stat-info{
+    font-size:13px;
+    color:var(--muted);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .stat-num{
+    font-size:28px;
+    font-weight:900;
+    background:linear-gradient(135deg,var(--accent),#9333ea);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+
+ 
+  .row{margin-bottom:16px}
+  .row label{
+    font-size:14px;
+    font-weight:700;
+    color:#334155;
+    display:block;
+    margin-bottom:8px;
+  }
+  input[type="text"], textarea, select, input[type="date"], input[type="time"]{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:2px solid #eef2ff;
+    font-size:14px;
+    font-family:inherit;
+    outline:none;
+    transition:all .2s;
+    background:#fbfdff;
+  }
+  input:focus, textarea:focus, select:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(99,102,241,0.1);
+  }
+  textarea{min-height:80px;resize:vertical}
+
+  .list-filters{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{
+    padding:8px 14px;
+    border-radius:20px;
+    background:#f8fafc;
+    border:2px solid #eef2ff;
+    font-weight:700;
+    color:#334155;
+    cursor:pointer;
+    font-size:13px;
+    transition:all .2s;
+  }
+  .chip:hover{
+    background:#eef2ff;
+    transform:translateY(-2px);
+  }
+  .chip.active{
+    background:linear-gradient(135deg,var(--accent),#9333ea);
+    color:#fff;
+    border:none;
+    box-shadow:0 4px 12px rgba(99,102,241,0.3);
+  }
+
+  .candidate-list,
+  #activeJobsList,
+  .emp-list,
+  .messages,
+  .notify-list,
+  .onboard-list,
+  .promo-list,
+  .succ-list{
+    max-height:320px; /* same height across */
+    overflow:auto;
+    border-radius:12px;
+    border:2px solid #eef2ff;
+    background:#fff;
+  }
+
+  .cand{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+    transition:all .2s;
+  }
+  .cand:last-child{border-bottom:0}
+  .cand:hover{background:#f8fafc}
+  .cand .meta{display:flex;gap:12px;align-items:center;flex:1;min-width:0}
+  .cand .name{font-weight:700;font-size:14px;color:#1e293b}
+  .status{
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight:800;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .status.applied{background:#dbeafe;color:#1e40af}
+  .status.shortlisted{background:#d1fae5;color:#065f46}
+  .status.rejected{background:#fee2e2;color:#991b1b}
+  .status.accepted {
+  background: #86efac;
+  color: #166534;
+}
+
+ 
+  .job-list-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-bottom:1px solid #f1f5f9;
+    background:#fff;
+    font-size:13px;
+    transition:all .2s;
+  }
+  .job-list-item:last-child{border-bottom:0}
+  .job-list-item:hover{background:#f8fafc}
+  .job-meta{flex:1;min-width:0;padding-right:12px}
+  .job-title{font-weight:800;margin:0 0 6px;font-size:14px;color:#1e293b}
+  .job-desc{
+    font-size:12px;
+    color:var(--muted);
+    margin:0 0 8px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .job-type-badge{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .job-type-badge.external{background:#fef3c7;color:#92400e}
+  .job-type-badge.internal{background:#dbeafe;color:#1e40af}
+  .job-type-badge.both{background:#d1fae5;color:#065f46}
+  .job-actions{display:flex;gap:6px;flex-shrink:0}
+
+ 
+  .messages{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-height:240px;
+    overflow:auto;
+  }
+  .message{
+    padding:12px;
+    border-radius:12px;
+    border:2px solid #eef2ff;
+    background:linear-gradient(135deg,#fff,#fbfdff);
+    font-size:13px;
+    line-height:1.6;
+    transition:all .2s;
+  }
+  .message:hover{
+    border-color:var(--accent);
+    transform:translateX(4px);
+  }
+  .message strong{
+    color:var(--accent);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+
+  
+  .emp-list{
+    max-height:280px;
+    overflow:auto;
+    border-radius:12px;
+    border:2px solid #eef2ff;
+  }
+  .emp{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+    transition:all .2s;
+  }
+  .emp:last-child{border-bottom:0}
+  .emp:hover{background:#f8fafc}
+
+ 
+  .scheduler{display:grid;gap:12px}
+  .notify-list{
+    max-height:160px;
+    overflow:auto;
+    padding:12px;
+    border-radius:12px;
+    border:2px solid #eef2ff;
+    background:#fbfdff;
+  }
+  .notify{
+    padding:8px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .notify:last-child{border-bottom:0}
+
+  
+  .candidate-list::-webkit-scrollbar,
+  .messages::-webkit-scrollbar,
+  .notify-list::-webkit-scrollbar,
+  .emp-list::-webkit-scrollbar,
+  #activeJobsList::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+  }
+  .candidate-list::-webkit-scrollbar-thumb,
+  .messages::-webkit-scrollbar-thumb,
+  .notify-list::-webkit-scrollbar-thumb,
+  .emp-list::-webkit-scrollbar-thumb,
+  #activeJobsList::-webkit-scrollbar-thumb{
+    background:linear-gradient(135deg,var(--accent),#9333ea);
+    border-radius:10px;
+  }
+  .candidate-list::-webkit-scrollbar-track,
+  .messages::-webkit-scrollbar-track,
+  .notify-list::-webkit-scrollbar-track,
+  .emp-list::-webkit-scrollbar-track,
+  #activeJobsList::-webkit-scrollbar-track{
+    background:#f1f5f9;
+    border-radius:10px;
+  }
+
+  @media (max-width:1400px){
+    .left-row{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:1100px){
+    .main-grid{grid-template-columns:1fr}
+    .left-row{grid-template-columns:1fr !important}
+    .wrap{padding:20px}
+    header{padding:16px 20px}
+  }
+  .field-error {
+  color: #dc2626;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 2px;
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Onboarding / Promotions / Succession styles */
+.onboard-list, .promo-list, .succ-list { max-height:260px; overflow:auto; border-radius:12px; border:2px solid #eef2ff; padding:8px; background:#fff; }
+.onboard-item, .promo-item, .succ-item { padding:12px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.onboard-item:last-child, .promo-item:last-child, .succ-item:last-child { border-bottom:0; }
+.small-meta { font-size:12px; color:var(--muted); }
+.btn-small { padding:6px 10px; border-radius:8px; font-weight:800; cursor:pointer; border:0; }
+.btn-complete { background:#10b981;color:#fff }
+.btn-delete { background:#fee2e2;color:#991b1b }
+.btn-edit { background:#dbeafe;color:#1e40af }
+.note { font-size:12px;color:var(--muted);margin-top:6px; }
+
+.points-badge {
+  background:#eef2ff;
+  padding:4px 8px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:700;
+  color:#1e40af;
+}
+
+/* Make the row with Recent Messages + Onboarding wider */
+.left-row.full {
+  grid-template-columns: 0.9fr 1.4fr; /* Messages smaller, Onboarding bigger */
+}
+
+/* Optional: on smaller screens keep them stacked */
+@media (max-width:1100px){
+  .left-row.full { grid-template-columns: 1fr !important; }
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="brand">
+      <div class="logo">HR</div>
+      <div>
+        <h1>XYZ Corporation</h1>
+        <p>Manage recruitment & workforce</p>
+      </div>
+    </div>
+    <div class="user">
+      <div style="text-align:right">
+        <div style="font-size:12px;color:var(--muted);font-weight:600">Logged in as</div>
+        <div style="font-weight:800;font-size:14px" id="userName">HR Manager</div>
+      </div>
+      <div class="avatar">HR</div>
+      <button class="btn" onclick="deleteAllData()" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;box-shadow:0 4px 12px rgba(239,68,68,0.3);padding:10px 16px" title="Delete all data except HR accounts">
+        🗑️ Delete Data
+      </button>
+      <button class="btn btn-ghost" onclick="location.href='index.html'">Logout</button>
+    </div>
+  </div>
+</header>
+
+<!-- Reorder to minimize gaps: 3 compact rows on left; right stacked -->
+<div class="wrap">
+  <div class="main-grid">
+
+    <!-- LEFT -->
+    <div class="left-section">
+      <!-- Row 1: Stats • Post Job • Schedule -->
+      <div class="left-row">
+        <div class="card">
+          <h3>📊 Quick Stats</h3>
+          <div class="stats">
+            <div class="stat-item">
+              <div class="stat-info">Total Jobs</div>
+              <div class="stat-num" id="statJobs">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-info">Applications</div>
+              <div class="stat-num" id="statApps">0</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-info">Total Users</div>
+              <div class="stat-num" id="statEmps">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>➕ Post New Job</h3>
+          <form id="jobForm" onsubmit="return addJob(event)">
+            <div class="row">
+              <label>Job Title</label>
+              <input type="text" id="jobTitle" placeholder="e.g. Senior Developer" required>
+            </div>
+            <div class="row">
+              <label>Description</label>
+              <textarea id="jobDesc" placeholder="Job details..."></textarea>
+            </div>
+            <div class="row">
+              <label>Visibility</label>
+              <select id="jobType">
+                <option value="External">External</option>
+                <option value="Internal">Internal</option>
+                <option value="Both">Both</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">Publish Job</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>📅 Schedule Interview</h3>
+          <form class="scheduler" onsubmit="return scheduleInterview(event)">
+            <input type="text" placeholder="Candidate name" id="schedName" required>
+            <input type="date" id="schedDate" required>
+            <input type="time" id="schedTime" required>
+            <button type="submit" class="btn btn-primary" style="width:100%">Schedule</button>
+          </form>
+          <div class="notify-list" id="notifyList"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Active Jobs full width -->
+      <div class="card">
+        <h3>💼 Active Jobs (<span id="jobCount">0</span>)</h3>
+        <input type="text" id="jobSearchInput" placeholder="Search jobs..." style="width:100%;padding:10px 12px;border-radius:10px;border:2px solid #eef2ff;font-size:13px;margin-bottom:10px" oninput="renderJobsList()">
+        <div id="activeJobsList"></div>
+      </div>
+
+      <!-- Row 3: Messages • Onboarding (fills space evenly) -->
+      <div class="left-row full">
+        <div class="card">
+          <h3>💬 Recent Messages</h3>
+          <div class="messages" id="messages"></div>
+        </div>
+        <div class="card">
+          <h3>🎉 Onboarding</h3>
+          <form id="onboardForm" onsubmit="return addOnboarding(event)" style="display:grid;gap:8px;margin-bottom:10px">
+            <input type="text" id="obName" placeholder="New hire name" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+            <input type="date" id="obStart" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+            <input type="text" id="obRole" placeholder="Role / Position" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+            <input type="text" id="obBuddy" placeholder="Assigned buddy" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+            <button class="btn btn-primary" style="width:100%">Add Onboarding</button>
+          </form>
+          <div class="onboard-list" id="onboardList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-section">
+      <div class="card">
+        <h3>👥 Candidate Management (<span id="candCount">0</span>)</h3>
+        <div class="list-filters">
+          <input type="text" id="candSearch" placeholder="Search candidates..." style="flex:1;padding:10px 12px;border-radius:10px;border:2px solid #eef2ff;font-size:13px" oninput="renderCandidates()">
+          <div class="chips">
+            <span class="chip active" data-filter="All" onclick="filterCands(this)">All</span>
+            <span class="chip" data-filter="Applied" onclick="filterCands(this)">Applied</span>
+            <span class="chip" data-filter="Shortlisted" onclick="filterCands(this)">Shortlisted</span>
+            <span class="chip" data-filter="Accepted" onclick="filterCands(this)">Accepted</span>
+            <span class="chip" data-filter="Rejected" onclick="filterCands(this)">Rejected</span>
+          </div>
+        </div>
+        <div class="candidate-list" id="candidateList"></div>
+      </div>
+
+      <div class="card">
+        <h3>👔 Registered Accounts</h3>
+        <div class="emp-list" id="empList"></div>
+      </div>
+
+      <div class="card">
+        <h3>⬆️ Promotions</h3>
+        <form id="promoForm" onsubmit="return addPromotion(event)" style="display:grid;gap:8px;margin-bottom:10px">
+          <input type="text" id="prName" placeholder="Employee name" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <input type="text" id="prOld" placeholder="Old role" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <input type="text" id="prNew" placeholder="New role" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <input type="date" id="prDate" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <button class="btn btn-primary" style="width:100%">Record Promotion</button>
+        </form>
+        <div class="promo-list" id="promoList"></div>
+      </div>
+
+      <div class="card">
+        <h3>🌱 Succession Planning</h3>
+        <form id="succForm" onsubmit="return addSuccession(event)" style="display:grid;gap:8px;margin-bottom:10px">
+          <input type="text" id="scPosition" placeholder="Position" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <input type="text" id="scNominee" placeholder="Nominee name" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <select id="scReadiness" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+            <option value="">Readiness</option>
+            <option value="Ready now">Ready now</option>
+            <option value="Ready soon">Ready soon</option>
+            <option value="Needs development">Needs development</option>
+          </select>
+          <input type="text" id="scNotes" placeholder="Notes (optional)" style="padding:10px;border-radius:8px;border:2px solid #eef2ff">
+          <button class="btn btn-primary" style="width:100%">Add Succession</button>
+        </form>
+        <div class="succ-list" id="succList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function getLS(k){ try{ return JSON.parse(localStorage.getItem(k)); } catch{ return null; } }
+function setLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function escapeHtml(t){ const m={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}; return t.replace(/[&<>"']/g,c=>m[c]); }
+
+function seedDemo(){
+  if(!getLS('jobs')) setLS('jobs', []);
+  // Remove or comment out the seed jobs array
+  // const seedJobs = [
+  //   {id:Date.now(), title:'Frontend Developer', desc:'React & TypeScript expert', type:'external', dept:'Engineering'},
+  //   {id:Date.now()+1, title:'HR Coordinator', desc:'Manage onboarding processes', type:'internal', dept:'HR'},
+  //   {id:Date.now()+2, title:'DevOps Engineer', desc:'CI/CD & cloud infrastructure', type:'both', dept:'IT'}
+  // ];
+  // const jobs = getLS('jobs')||[];
+  // if(jobs.length===0) setLS('jobs', seedJobs);
+
+  if(!getLS('applications')) setLS('applications', []);
+  if(!getLS('schedules')) setLS('schedules', []);
+  if(!getLS('messages')) setLS('messages', []);
+  if(!getLS('onboardings')) setLS('onboardings', []);
+  if(!getLS('promotions')) setLS('promotions', []);
+  if(!getLS('successions')) setLS('successions', []);
+}
+
+function deleteAllData(){
+  if(!confirm('⚠️ Delete ALL data? This cannot be undone.')) return;
+  localStorage.removeItem('applications');
+  localStorage.removeItem('schedules');
+  localStorage.removeItem('messages');
+  localStorage.removeItem('jobs');
+  localStorage.removeItem('onboardings');
+  localStorage.removeItem('promotions');
+  localStorage.removeItem('successions');
+  
+  // Re-initialize empty arrays
+  setLS('jobs', []);
+  setLS('applications', []);
+  setLS('schedules', []);
+  setLS('messages', []);
+  setLS('onboardings', []);
+  setLS('promotions', []);
+  setLS('successions', []);
+  
+  showNotify('All data cleared.');
+  location.reload();
+}
+
+function loadCurrent(){
+  const u = getLS('currentUser');
+  if(!u || u.role !== 'hr'){
+    alert('Access denied. HR login required.');
+    location.href = 'index.html';
+    return;
+  }
+  document.getElementById('userName').textContent = u.name || 'HR Manager';
+}
+
+function updateStats(){
+  const jobs = getLS('jobs')||[];
+  const apps = getLS('applications')||[];
+  const users = getLS('users')||[];
+  document.getElementById('statJobs').textContent = jobs.length;
+  document.getElementById('statApps').textContent = apps.length;
+  document.getElementById('statEmps').textContent = users.length;
+}
+function isJobTitleDuplicate(title, excludeId = null) {
+  const jobs = getLS('jobs') || [];
+  if (!title || typeof title !== 'string') return false;
+  const trimmedTitle = title.trim().toLowerCase();
+  if (!trimmedTitle) return false;
+  return jobs.some(j => 
+    j && j.title && 
+    j.title.trim().toLowerCase() === trimmedTitle && 
+    j.id !== excludeId
+  );
+}
+
+function addJob(e) {
+  e.preventDefault();
+  clearJobErrors();
+  
+  const form = e.target;
+  const title = form.jobTitle.value.trim();
+  const desc = form.jobDesc.value.trim();
+  const type = form.jobType.value;
+
+  let hasError = false;
+
+  // Validate title
+  if (!title) {
+    showFieldError(form.jobTitle, 'Job title is required');
+    hasError = true;
+  } else if (isJobTitleDuplicate(title)) {
+    showFieldError(form.jobTitle, 'This job title already exists');
+    hasError = true;
+  }
+
+  // Validate description
+  if (!desc) {
+    showFieldError(form.jobDesc, 'Job description is required');
+    hasError = true;
+  }
+
+  if (hasError) return false;
+
+  const jobs = getLS('jobs') || [];
+  const newJob = {
+    id: Date.now(),
+    title: title,
+    desc: desc,
+    type: type
+  };
+  
+  jobs.push(newJob);
+  setLS('jobs', jobs);
+  
+  form.reset();
+  renderJobsList();
+  updateStats();
+  showNotify(`Job posted: ${title}`);
+  return false;
+}
+
+function scheduleInterview(e) {
+  e.preventDefault();
+  clearScheduleErrors();
+
+  const nameEl = document.getElementById('schedName');
+  const dateEl = document.getElementById('schedDate');
+  const timeEl = document.getElementById('schedTime');
+
+  const name = nameEl.value.trim();
+  const date = dateEl.value;
+  const time = timeEl.value;
+
+  const missing = [];
+  if (!name) missing.push('candidate name');
+  if (!date) missing.push('date');
+  if (!time) missing.push('time');
+
+  // Show field-level errors
+  if (!name) showFieldError(nameEl, 'Candidate name is required');
+  if (!date) showFieldError(dateEl, 'Interview date is required');
+  if (!time) showFieldError(timeEl, 'Interview time is required');
+
+  if (missing.length > 0) {
+    const message = missing.length === 1
+      ? `Please enter ${missing[0]}`
+      : `Please enter ${missing.join(' and ')}`;
+    showNotify(message);
+    return false;
+  }
+
+  // Validate date is not in past
+  const selectedDate = new Date(`${date} ${time}`);
+  if (selectedDate < new Date()) {
+    showFieldError(dateEl, 'Interview date & time cannot be in the past');
+    showNotify('Please select a future date and time');
+    return false;
+  }
+
+  // Rest of your existing scheduleInterview logic
+  const schedules = getLS('schedules') || [];
+  const interviews = getLS('interviews') || [];
+
+  const newSchedule = {
+    id: Date.now(),
+    candidate: name,
+    date,
+    time,
+    title: `Interview for ${name}`
+  };
+
+  schedules.push(newSchedule);
+  interviews.push(newSchedule);
+
+  setLS('schedules', schedules);
+  setLS('interviews', interviews);
+
+  document.getElementById('schedName').value = '';
+  document.getElementById('schedDate').value = '';
+  document.getElementById('schedTime').value = '';
+  renderSchedules();
+  showNotify(`Interview scheduled for ${name}`);
+  return false;
+}
+
+// Add these helper functions for validation
+
+function showFieldError(inputEl, message) {
+  if (!inputEl) return;
+  inputEl.classList.add('error');
+  
+  // Find or create error element
+  let errorEl = inputEl.parentElement.querySelector('.field-error');
+  if (!errorEl) {
+    errorEl = document.createElement('div');
+    errorEl.className = 'field-error';
+    inputEl.parentElement.appendChild(errorEl);
+  }
+  
+  errorEl.textContent = message;
+  errorEl.style.display = 'block';
+}
+
+function clearFieldError(inputEl) {
+  if (!inputEl) return;
+  inputEl.classList.remove('error');
+  const errorEl = inputEl.parentElement.querySelector('.field-error');
+  if (errorEl) errorEl.style.display = 'none';
+}
+
+function clearJobErrors() {
+  ['jobTitle', 'jobDesc', 'jobType'].forEach(id => {
+    clearFieldError(document.getElementById(id));
+  });
+}
+
+function clearScheduleErrors() {
+  ['schedName', 'schedDate', 'schedTime'].forEach(id => {
+    clearFieldError(document.getElementById(id));
+  });
+}
+
+// Add these event listeners to clear errors on input
+document.addEventListener('DOMContentLoaded', function() {
+  // Clear job form errors on input
+  ['jobTitle', 'jobDesc', 'jobType'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => clearFieldError(el));
+  });
+
+  // Clear schedule form errors on input
+  ['schedName', 'schedDate', 'schedTime'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', () => clearFieldError(el));
+  });
+});
+
+function editJob(id){
+  const jobs = getLS('jobs')||[];
+  const job = jobs.find(j=>j.id===id);
+  if(!job) return alert('Job not found');
+  
+  document.getElementById('jobTitle').value = job.title;
+  document.getElementById('jobDesc').value = job.desc || '';
+  document.getElementById('jobType').value = job.type || 'External';
+  
+  document.getElementById('jobForm').dataset.editingId = id;
+  const submitBtn = document.querySelector('#jobForm button[type="submit"]');
+  if(submitBtn) submitBtn.textContent = 'Update Job';
+  
+  window.scrollTo({top:0, behavior:'smooth'});
+  showNotify(`Editing: ${job.title}`);
+}
+
+function renderJobsList(){
+  const jobs = getLS('jobs')||[];
+  const q = (document.getElementById('jobSearchInput')?.value||'').toLowerCase();
+  const filtered = jobs.filter(j => 
+    j.title.toLowerCase().includes(q) || 
+    (j.desc||'').toLowerCase().includes(q)
+  );
+  
+  const list = document.getElementById('activeJobsList');
+  document.getElementById('jobCount').textContent = filtered.length;
+  
+  if(filtered.length === 0){
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)">No jobs posted yet</div>';
+    return;
+  }
+  
+  list.innerHTML = filtered.map(j => `
+    <div class="job-list-item">
+      <div class="job-meta">
+        <div class="job-title">${escapeHtml(j.title)}</div>
+        <div class="job-desc">${escapeHtml(j.desc || 'No description')}</div>
+        <span class="job-type-badge ${(j.type||'external').toLowerCase()}">${escapeHtml(j.type || 'External')}</span>
+      </div>
+      <div class="job-actions">
+        <button class="chip" onclick="editJob(${j.id})" style="background:#dbeafe;color:#1e40af">Edit</button>
+        <button class="chip" onclick="deleteJobFromActive(${j.id})" style="background:#fee2e2;color:#991b1b">Delete</button>
+      </div>
+    </div>
+  `).join('');
+  
+  updateStats();
+}
+
+function deleteJobFromActive(jobId){
+  if(!confirm('Delete this job? All related applications will remain but become orphaned.')) return;
+  
+  const jobs = getLS('jobs')||[];
+  const idx = jobs.findIndex(j=>j.id===jobId);
+  
+  if(idx === -1){
+    alert('Job not found');
+    return;
+  }
+  
+  const jobTitle = jobs[idx].title;
+  jobs.splice(idx, 1);
+  setLS('jobs', jobs);
+  
+  renderJobsList();
+  updateStats();
+  
+  pushMessage('system', `Job deleted: ${jobTitle}`);
+  showNotify(`Job deleted: ${jobTitle}`);
+}
+
+function renderCandidates(){
+  const apps = getLS('applications')||[];
+  const q = (document.getElementById('candSearch').value||'').toLowerCase();
+  const activeChip = document.querySelector('.chip.active');
+  const active = (activeChip && activeChip.dataset.filter) || 'All';
+  const list = document.getElementById('candidateList');
+  list.innerHTML = '';
+  const filtered = apps.filter(a=>{
+    if(active !== 'All' && (a.status || 'Applied') !== active) return false;
+    if(!q) return true;
+    return (a.name||a.applicantName||'').toLowerCase().includes(q) || (a.email||a.applicantEmail||'').toLowerCase().includes(q);
+  });
+  document.getElementById('candCount').textContent = filtered.length;
+  
+  if(filtered.length === 0){
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)">No candidates found</div>';
+    return;
+  }
+  
+  filtered.forEach(a=>{
+    const job = (getLS('jobs')||[]).find(j=>j.id===a.jobId) || {title:'—'};
+    const div = document.createElement('div');
+    div.className = 'cand';
+    div.innerHTML = `
+      <div class="meta">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#eef2ff,#e0e7ff);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent)">${((a.name||a.applicantName||'?')).split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase()}</div>
+        <div>
+          <div class="name">${escapeHtml(a.name||a.applicantName||'Unknown')}</div>
+          <div style="font-size:12px;color:var(--muted)">${escapeHtml(a.email||a.applicantEmail||'')} • ${escapeHtml(job.title)}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div class="status ${((a.status||'Applied').toLowerCase())}">${escapeHtml(a.status || 'Applied')}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="chip" onclick="updateCandStatus(${a.id},'Accepted')" style="background:#86efac;color:#166534">Accept</button>
+          <button class="chip" onclick="updateCandStatus(${a.id},'Shortlisted')" style="background:#d1fae5;color:#065f46">Shortlist</button>
+          <button class="chip" onclick="updateCandStatus(${a.id},'Rejected')" style="background:#fee2e2;color:#991b1b">Reject</button>
+          ${a.resume ? `<button class="chip" onclick="viewResume(${a.id})" style="background:#dbeafe;color:#1e40af">Resume</button>` : ''}
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function filterCands(el){
+  document.querySelectorAll('.chip[data-filter]').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderCandidates();
+}
+
+function updateCandStatus(id,status){
+  const apps = getLS('applications')||[];
+  const a = apps.find(x=>x.id==id);
+  if(!a) return;
+
+  a.status = status;
+  setLS('applications', apps);
+  renderCandidates();
+
+  const name = a.name || a.applicantName;
+
+  if(status === 'Accepted') {
+    // Find job title for the application
+    const job = (getLS('jobs')||[]).find(j=>j.id===a.jobId);
+    const appliedTitle = job ? job.title : null;
+
+    // Persist accepted position to the candidate’s user record
+    const users = getLS('users')||[];
+    const byEmailIdx = users.findIndex(u => u.email && a.applicantEmail && u.email === a.applicantEmail);
+    const byNameIdx = users.findIndex(u => u.name && name && u.name === name);
+    const idx = byEmailIdx !== -1 ? byEmailIdx : byNameIdx;
+
+    if(idx !== -1){
+      users[idx].acceptedPosition = appliedTitle || (a.position || 'Accepted');
+      setLS('users', users);
+    }
+
+    pushMessage('system', `🎉 ${name} has been hired at XYZ Company${appliedTitle ? ' — ' + appliedTitle : ''}!`);
+    showNotify(`🎉 Congratulations! ${name} has been hired${appliedTitle ? ' — ' + appliedTitle : ''}!`);
+  } else {
+    pushMessage('system', `Candidate ${name}: ${status}`);
+    showNotify(`${name} marked as ${status}`);
+  }
+}
+
+function viewResume(appId){
+  const apps = getLS('applications')||[];
+  const a = apps.find(x=>x.id==appId);
+  if(!a || !a.resume){ 
+    alert('No resume found for this candidate'); 
+    return; 
+  }
+  if(!a.resume.data){
+    alert('Resume data is missing');
+    return;
+  }
+  const win = window.open('', '_blank');
+  if(!win){
+    alert('Please allow pop-ups to view resume');
+    return;
+  }
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Resume - ${escapeHtml(a.name || a.applicantName || 'Candidate')}</title>
+      <style>body{margin:0;padding:0;overflow:hidden}iframe{width:100%;height:100vh;border:0}</style>
+    </head>
+    <body><iframe src="${a.resume.data}"></iframe></body>
+    </html>
+  `);
+  win.document.close();
+}
+
+function scheduleInterview(e){
+  e.preventDefault();
+  const name = document.getElementById('schedName').value;
+  const date = document.getElementById('schedDate').value;
+  const time = document.getElementById('schedTime').value;
+  const schedules = getLS('schedules')||[];
+  const interviews = getLS('interviews')||[];
+  
+  const newSchedule = {id:Date.now(),candidate:name,date,time,title:`Interview for ${name}`};
+  schedules.push(newSchedule);
+  interviews.push(newSchedule);
+  
+  setLS('schedules', schedules);
+  setLS('interviews', interviews);
+  
+  document.getElementById('schedName').value='';
+  document.getElementById('schedDate').value='';
+  document.getElementById('schedTime').value='';
+  renderSchedules();
+  showNotify(`Interview scheduled for ${name}`);
+  return false;
+}
+
+function renderSchedules(){
+  const schedules = getLS('schedules')||[];
+  const list = document.getElementById('notifyList');
+  
+  if(schedules.length === 0){
+    list.innerHTML = '<div style="color:var(--muted);padding:8px;text-align:center">No interviews scheduled</div>';
+    return;
+  }
+  
+  list.innerHTML = schedules.slice(-5).reverse().map(s=>`
+    <div class="notify">
+      <strong>${escapeHtml(s.candidate)}</strong><br>
+      📅 ${escapeHtml(s.date)} at ${escapeHtml(s.time)}
+    </div>
+  `).join('');
+}
+
+function renderMessages(){
+  const msgs = (getLS('messages')||[]).slice(-8).reverse();
+  const list = document.getElementById('messages');
+  
+  if(msgs.length === 0){
+    list.innerHTML = '<div style="color:var(--muted);padding:12px;text-align:center">No messages yet</div>';
+    return;
+  }
+  
+  list.innerHTML = msgs.map(m=>`
+    <div class="message">
+      <strong>${escapeHtml(m.from||'system')}</strong><br>
+      ${escapeHtml(m.text)}
+    </div>
+  `).join('');
+}
+
+function ensureUserPoints(){
+  const users = getLS('users')||[];
+  let changed = false;
+  users.forEach(u=>{
+    if(u.role !== 'hr' && typeof u.points !== 'number'){
+      u.points = 0;
+      changed = true;
+    }
+  });
+  if(changed) setLS('users', users);
+}
+
+function renderEmployees(){
+  ensureUserPoints();
+  const users = getLS('users')||[];
+  const listEl = document.getElementById('empList');
+  if(!listEl){ return; }
+  listEl.innerHTML = users.map(u=>{
+    const isHr = u.role === 'hr';
+    return `
+    <div class="emp" data-email="${escapeHtml(u.email||'')}">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px">
+          <strong>${escapeHtml(u.name||u.email||'User')}</strong>
+          ${!isHr ? `<span class="points-badge" id="pts-${escapeHtml(u.email)}">Pts: ${u.points||0}</span>` : ''}
+        </div>
+        <div class="small-meta">${escapeHtml(u.role||'')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${!isHr ? `
+          <input type="number" min="0" value="${u.points||0}" data-pinput="${escapeHtml(u.email)}" style="width:70px;padding:6px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px" />
+          <button class="btn-small btn-edit" data-savepts="${escapeHtml(u.email)}">Add</button>
+          <button class="btn-small btn-delete" onclick="deleteAccount('${escapeHtml(u.email)}')">Delete</button>
+        ` : `<span style="font-size:11px;font-weight:700;color:#64748b">Admin</span>`}
+      </div>
+    </div>`;
+  }).join('') || '<div style="padding:20px;color:var(--muted)">No accounts</div>';
+}
+
+function setUserPoints(email,newPts){
+  const users = getLS('users')||[];
+  const u = users.find(x=>x.email===email);
+  if(!u || u.role === 'hr') return; // block HR/admin
+  u.points = Math.max(0, Number(newPts)||0);
+  setLS('users', users);
+  renderEmployees();
+  pushMessage('system', `Updated points for ${u.name} to ${u.points}`);
+}
+
+/* --- Onboarding functions --- */
+function addOnboarding(e){
+  e.preventDefault();
+  const name = (document.getElementById('obName').value||'').trim();
+  const start = document.getElementById('obStart').value;
+  const role = (document.getElementById('obRole').value||'').trim();
+  const buddy = (document.getElementById('obBuddy').value||'').trim();
+  if(!name || !start || !role){
+    showNotify('Please provide name, start date and role for onboarding');
+    return false;
+  }
+  const list = getLS('onboardings')||[];
+  const item = { id: Date.now(), name, start, role, buddy, completed: false };
+  list.push(item); setLS('onboardings', list);
+  renderOnboardings();
+  pushMessage('system', `Onboarding added: ${name}`);
+  showNotify(`Onboarding scheduled for ${name}`);
+  document.getElementById('onboardForm').reset();
+  return false;
+}
+function renderOnboardings(){
+  const list = getLS('onboardings')||[];
+  const out = document.getElementById('onboardList');
+  if(!out) return;
+  if(list.length === 0){ out.innerHTML = '<div style="padding:12px;color:var(--muted)">No onboarding items</div>'; return; }
+  out.innerHTML = list.slice().reverse().map(o=>`
+    <div class="onboard-item" id="ob-${o.id}">
+      <div style="min-width:0">
+        <div style="font-weight:800">${escapeHtml(o.name)} <span class="small-meta">• ${escapeHtml(o.role)}</span></div>
+        <div class="small-meta">Start: ${escapeHtml(o.start)} ${o.buddy ? '• Buddy: '+escapeHtml(o.buddy) : ''}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-small btn-complete" onclick="toggleOnboarding(${o.id})">${o.completed ? 'Completed' : 'Mark Done'}</button>
+        <button class="btn-small btn-delete" onclick="deleteOnboarding(${o.id})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+function toggleOnboarding(id){
+  const list = getLS('onboardings')||[];
+  const idx = list.findIndex(x=>x.id==id);
+  if(idx===-1) return;
+  list[idx].completed = !list[idx].completed;
+  setLS('onboardings', list);
+  renderOnboardings();
+  pushMessage('system', `${list[idx].name} onboarding ${list[idx].completed ? 'completed' : 'updated'}`);
+  showNotify(`${list[idx].name} onboarding ${list[idx].completed ? 'completed' : 'updated'}`);
+}
+function deleteOnboarding(id){
+  if(!confirm('Remove onboarding item?')) return;
+  const list = getLS('onboardings')||[];
+  const idx = list.findIndex(x=>x.id==id);
+  if(idx===-1) return;
+  const name = list[idx].name;
+  list.splice(idx,1); setLS('onboardings', list);
+  renderOnboardings();
+  pushMessage('system', `Onboarding removed: ${name}`);
+  showNotify(`Removed onboarding: ${name}`);
+}
+
+/* --- Promotions functions --- */
+function addPromotion(e){
+  e.preventDefault();
+  const name = (document.getElementById('prName').value||'').trim();
+  const oldR = (document.getElementById('prOld').value||'').trim();
+  const newR = (document.getElementById('prNew').value||'').trim();
+  const date = document.getElementById('prDate').value;
+  if(!name || !oldR || !newR || !date){ showNotify('Please complete promotion fields'); return false; }
+  const list = getLS('promotions')||[];
+  const item = { id: Date.now(), name, oldRole: oldR, newRole: newR, date, processed: false };
+  list.push(item); setLS('promotions', list);
+  renderPromotions();
+  pushMessage('system', `Promotion recorded: ${name} → ${newR}`);
+  showNotify(`Promotion recorded for ${name}`);
+  document.getElementById('promoForm').reset();
+  return false;
+}
+function renderPromotions(){
+  const list = getLS('promotions')||[];
+  const out = document.getElementById('promoList');
+  if(!out) return;
+  if(list.length === 0){ out.innerHTML = '<div style="padding:12px;color:var(--muted)">No promotions recorded</div>'; return; }
+  out.innerHTML = list.slice().reverse().map(p=>`
+    <div class="promo-item" id="pr-${p.id}">
+      <div style="min-width:0">
+        <div style="font-weight:800">${escapeHtml(p.name)} <span class="small-meta">• ${escapeHtml(p.oldRole)} → ${escapeHtml(p.newRole)}</span></div>
+        <div class="small-meta">Effective: ${escapeHtml(p.date)}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-small btn-complete" onclick="togglePromotion(${p.id})">${p.processed ? 'Processed' : 'Mark Processed'}</button>
+        <button class="btn-small btn-delete" onclick="deletePromotion(${p.id})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+function togglePromotion(id){
+  const list = getLS('promotions')||[];
+  const idx = list.findIndex(x=>x.id==id);
+  if(idx===-1) return;
+  
+  const p = list[idx];
+  
+  // If marking as processed, update the user's role
+  if(!p.processed){
+    const users = getLS('users')||[];
+    const userIdx = users.findIndex(u => 
+      (u.email && p.name && u.email.toLowerCase().includes(p.name.toLowerCase())) ||
+      (u.name && p.name && u.name.toLowerCase() === p.name.toLowerCase())
+    );
+    
+    if(userIdx !== -1){
+      users[userIdx].promotedTo = p.newRole;
+      setLS('users', users);
+    }
+  }
+  
+  list[idx].processed = !list[idx].processed;
+  setLS('promotions', list);
+  renderPromotions();
+  pushMessage('system', `Promotion ${p.name} ${list[idx].processed ? 'processed' : 'updated'}`);
+  showNotify(`Promotion ${p.name} ${list[idx].processed ? 'processed' : 'updated'}`);
+}
+
+/* --- Succession functions --- */
+function addSuccession(e){
+  e.preventDefault();
+  const position = (document.getElementById('scPosition').value||'').trim();
+  const nominee = (document.getElementById('scNominee').value||'').trim();
+  const readiness = (document.getElementById('scReadiness').value||'').trim();
+  const notes = (document.getElementById('scNotes').value||'').trim();
+  if(!position || !nominee || !readiness){ showNotify('Please complete succession fields'); return false; }
+  const list = getLS('successions')||[];
+  const item = { id:Date.now(), position, nominee, readiness, notes };
+  list.push(item); setLS('successions', list);
+  renderSuccession();
+  pushMessage('system', `Succession added: ${nominee} for ${position}`);
+  showNotify(`Succession added: ${nominee}`);
+  document.getElementById('succForm').reset();
+  return false;
+}
+
+function renderSuccession(){
+  const list = getLS('successions')||[];
+  const out = document.getElementById('succList');
+  if(!out) return;
+  if(list.length === 0){ out.innerHTML = '<div style="padding:12px;color:var(--muted)">No succession plans</div>'; return; }
+  out.innerHTML = list.slice().reverse().map(s=>`
+    <div class="succ-item" id="sc-${s.id}">
+      <div style="min-width:0">
+        <div style="font-weight:800">${escapeHtml(s.nominee)} <span class="small-meta">• ${escapeHtml(s.position)}</span></div>
+        <div class="small-meta">${escapeHtml(s.readiness)} ${s.notes ? '• '+escapeHtml(s.notes) : ''}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn-small btn-edit" onclick="editSuccession(${s.id})">Edit</button>
+        <button class="btn-small btn-delete" onclick="deleteSuccession(${s.id})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function editSuccession(id){
+  const list = getLS('successions')||[];
+  const item = list.find(x=>x.id==id);
+  if(!item) return;
+  document.getElementById('scPosition').value = item.position;
+  document.getElementById('scNominee').value = item.nominee;
+  document.getElementById('scReadiness').value = item.readiness;
+  document.getElementById('scNotes').value = item.notes || '';
+  // remove existing entry; user will submit updated one
+  deleteSuccession(id);
+}
+
+function deleteSuccession(id){
+  if(!confirm('Remove succession plan?')) return;
+  const list = getLS('successions')||[];
+  const idx = list.findIndex(x=>x.id==id);
+  if(idx===-1) return;
+  const name = list[idx].nominee;
+  list.splice(idx,1); setLS('successions', list);
+  renderSuccession();
+  pushMessage('system', `Succession removed: ${name}`);
+  showNotify(`Removed succession: ${name}`);
+}
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-savepts]');
+  if(btn){
+    const email = btn.getAttribute('data-savepts');
+    const inp = document.querySelector(`input[data-pinput="${email}"]`);
+    if(inp){
+      setUserPoints(email, inp.value);
+    }
+  }
+});
+
+function pushMessage(from, text){
+  const msgs = getLS('messages')||[];
+  msgs.push({id:Date.now(), from, text, time:Date.now()});
+  setLS('messages', msgs);
+  renderMessages();
+}
+
+function showNotify(msg){
+  alert(msg);
+}
+
+/* --- Wire new render calls into init --- */
+(function init(){
+  seedDemo();
+  loadCurrent();
+  updateStats();
+  renderCandidates();
+  renderEmployees();
+  renderMessages();
+  renderJobsList();
+  renderSchedules();
+  renderOnboardings();
+  renderPromotions();
+  renderSuccession();
+  const style = document.createElement('style');
+  style.textContent = '@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}';
+  document.head.appendChild(style);
+})();
+
+function deleteAccount(email){
+  const users = getLS('users')||[];
+  const u = users.find(x=>x.email===email);
+  if(!u) return;
+  if(u.role === 'hr'){ showNotify('Admin account cannot be deleted'); return; }
+  if(!confirm('Delete this account?')) return;
+  const name = u.name || email;
+  const idx = users.findIndex(x=>x.email===email);
+  users.splice(idx,1);
+  setLS('users', users);
+  renderEmployees();
+  pushMessage('system', `Account deleted: ${name}`);
+  showNotify(`Deleted: ${name}`);
+}
+</script>
+
+</body>
+</html>

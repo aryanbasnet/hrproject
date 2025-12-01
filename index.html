@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>HRMS — Role Based Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#0f172a; --bg-2:#0f172a00;
+    --card:#ffffffcc; --muted:#6b7280;
+    --accent-1:#16bea8; --accent-2:#06b6d4;
+    --glass:rgba(255,255,255,0.85);
+    --success:#10b981; --danger:#ef4444;
+    --shadow: 0 10px 30px rgba(2,6,23,0.18);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    background: radial-gradient(1000px 500px at 10% 10%, #eef2ff 0%, transparent 15%),
+                radial-gradient(1000px 500px at 90% 90%, #fef3c7 0%, transparent 12%),
+                linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);
+    display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;
+    -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  }
+
+  .wrap{
+    display:flex;gap:28px;align-items:stretch;
+    width:100%;max-width:980px;
+  }
+
+  .panel {
+    flex:1;background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(6,182,212,0.06));
+    border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;justify-content:center;
+    box-shadow:var(--shadow);
+    min-width:320px;
+  }
+
+  .card{
+    width:420px;background:var(--glass);backdrop-filter:blur(8px);padding:32px;border-radius:var(--radius);
+    box-shadow:var(--shadow);align-self:center;
+  }
+
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .logo{
+    width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--accent-1),#9333ea);color:white;font-weight:800;font-size:18px;
+    box-shadow:0 6px 18px rgba(124,58,237,0.18);
+  }
+  h1{margin:0;font-size:20px;color:var(--accent-1);letter-spacing:-0.2px}
+  p.lead{margin:6px 0 18px;color:var(--muted);font-size:13px}
+
+  .input{width:100%;padding:12px 12px 12px 40px;border:1px solid #e6e9ef;border-radius:10px;margin-bottom:12px;font-weight:600;
+         background:white;outline:none;transition:box-shadow .18s,border-color .12s}
+  .input:focus{box-shadow:0 6px 20px rgba(99,102,241,0.12);border-color:rgba(124,58,237,0.45)}
+  .field{position:relative}
+  .field .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:0.9;color:#8b8f98;font-size:14px}
+
+  .select{appearance:none; -webkit-appearance:none;}
+  .role-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:999px;background:#fff;border:1px solid #f1f5f9;color:var(--muted);font-weight:600;font-size:13px}
+  .role-badge .dot{width:10px;height:10px;border-radius:50%}
+
+  .actions{display:flex;gap:12px;margin-top:8px}
+  button.primary{flex:1;padding:12px;border:none;border-radius:10px;background:linear-gradient(90deg,var(--accent-1),#9333ea);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 28px rgba(124,58,237,0.14);transition:transform .12s}
+  button.primary:active{transform:translateY(1px)}
+  button.ghost{background:transparent;border:1px solid rgba(99,102,241,0.08);color:var(--accent-1);font-weight:700;padding:12px;border-radius:10px;cursor:pointer}
+
+  .small{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+  .link{color:var(--accent-1);cursor:pointer;text-decoration:underline;font-weight:700}
+
+ 
+  .hidden{display:none}
+  .toggle-pass{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#6b7280;cursor:pointer;padding:6px;border-radius:6px}
+  .note{font-size:12px;color:#475569;margin-top:10px}
+
+
+  @media (max-width:880px){
+    .wrap{flex-direction:column;align-items:center}
+    .card{width:100%;max-width:520px}
+    .panel{display:none}
+  }
+  /* Add inside existing <style> tag */
+.validation-msg {
+  display: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  animation: slideIn 0.2s ease;
+}
+
+.validation-msg.show {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.validation-msg.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fee2e2;
+}
+
+.validation-msg.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #dcfce7;
+}
+
+.input.error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 12px;
+  margin: 4px 0 8px 40px;
+  display: none;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}   
+
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel" aria-hidden="true">
+      <div style="max-width:360px">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+          <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:20px">HR</div>
+          <div>
+            <div style="font-weight:800;color:rgba(15,23,42,0.92);font-size:18px">XYZ Corporation</div>
+            <div style="font-size:13px;color:var(--muted)">Role-based access for your team</div>
+          </div>
+        </div>
+
+        <h3 style="margin:8px 0 4px;color:rgba(15,23,42,0.9)">Built for Teams</h3>
+        <p style="color:var(--muted);margin:0 0 14px">Finding job is now easy with Secure, simple and  fast.</p>
+
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <div class="role-badge"><span class="dot" style="background:#60a5fa"></span> Employee</div>
+
+          <div class="role-badge"><span class="dot" style="background:#f59e0b"></span> HR Manager</div>
+
+        </div>
+
+        <p class="note">this is my prototype website add content</p>
+        
+        </p>
+      </div>
+    </div>
+
+    <div class="card" id="loginCard">
+      <div class="brand">
+        <div class="logo">HR</div>
+        <div>
+          <h1>Sign In</h1>
+          <p class="lead">Welcome back — sign in to continue</p>
+        </div>
+      </div>
+
+      <div class="validation-msg" id="loginMsg"></div>
+
+      <div class="field">
+        <span class="icon">📧</span>
+        <input id="liEmail" class="input" placeholder="Email" autocomplete="email" />
+        <div class="field-error"></div>
+      </div>
+
+      <div class="field" style="margin-bottom:6px">
+        <span class="icon">🔒</span>
+        <input id="liPass" type="password" class="input" placeholder="Password" autocomplete="current-password" />
+        <button class="toggle-pass" id="toggleLoginPass" aria-label="Toggle password">Show</button>
+        <div class="field-error"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:13px;color:var(--muted)"><input type="checkbox" id="remember" /> <label for="remember" style="color:var(--muted);font-weight:600">Remember me</label></div>
+        <div class="link" onclick="openSignup()" style="font-size:13px"></div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="login()">Login</button>
+        <button class="ghost" onclick="openSignup()">Sign up</button>
+      </div>
+
+      <div class="small">Not your device? <span class="link" onclick="clearCurrent()">Clear session</span></div>
+    </div>
+
+    <div class="card hidden" id="signupCard" style="display:none">
+      <div class="brand">
+        <div class="logo" style="background:linear-gradient(135deg,#06b6d4,#7c3aed)">+</div>
+        <div>
+          <h1>Sign Up</h1>
+          <p class="lead">Create a new account</p>
+        </div>
+      </div>
+
+      <div class="validation-msg" id="signupMsg"></div>
+
+      <div class="field">
+        <span class="icon">🙍</span>
+        <input id="suName" class="input" placeholder="Full name" />
+        <div class="field-error"></div>
+      </div>
+
+      <div class="field">
+        <span class="icon">📧</span>
+        <input id="suEmail" class="input" placeholder="Email" />
+        <div class="field-error"></div>
+      </div>
+
+      <div class="field" style="margin-bottom:6px">
+        <span class="icon">🔒</span>
+        <input id="suPass" type="password" class="input" placeholder="Password (min 6 chars)" />
+        <button class="toggle-pass" id="toggleSignupPass" aria-label="Toggle password">Show</button>
+        <div class="field-error"></div>
+      </div>
+
+      <div class="field" style="margin-bottom:8px">
+        <span class="icon">🏷️</span>
+        <select id="suRole" class="input select">
+          <option value="external">External</option>
+          <option value="Internal">Internal</option>
+          <option value="hr"></option>
+        </select>
+        <div class="field-error"></div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" onclick="signup()">Create account</button>
+        <button class="ghost" onclick="openLogin()">Back</button>
+      </div>
+
+      <div class="small">Already have an account? <span class="link" onclick="openLogin()">Sign in</span></div>
+    </div>
+  </div>
+
+<script>
+  const users = JSON.parse(localStorage.getItem('users') || '[]');
+  function saveUsers(){ localStorage.setItem('users', JSON.stringify(users)); }
+
+  // Validation UI helpers
+  function showValidation(message, type='error', cardId='loginCard') {
+    const msgEl = document.getElementById(cardId === 'loginCard' ? 'loginMsg' : 'signupMsg');
+    if(!msgEl) return;
+
+    msgEl.innerHTML = `
+      <span>${type === 'error' ? '❌' : '✅'}</span>
+      <span>${message}</span>
+    `;
+    msgEl.className = `validation-msg show ${type}`;
+
+    if(type === 'success') {
+      setTimeout(() => msgEl.classList.remove('show'), 2000);
+    }
+  }
+
+  function hideValidation(cardId='loginCard') {
+    const msgEl = document.getElementById(cardId === 'loginCard' ? 'loginMsg' : 'signupMsg');
+    if(msgEl) msgEl.classList.remove('show');
+  }
+
+  function showFieldError(inputEl, message) {
+    if(!inputEl) return;
+    inputEl.classList.add('error');
+    const errorEl = inputEl.nextElementSibling;
+    if(errorEl && errorEl.classList.contains('field-error')) {
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+  }
+
+  function clearFieldErrors() {
+    document.querySelectorAll('.input.error').forEach(input => {
+      input.classList.remove('error');
+      const errorEl = input.nextElementSibling;
+      if(errorEl && errorEl.classList.contains('field-error')) {
+        errorEl.style.display = 'none';
+      }
+    });
+  }
+
+  function signup() {
+    hideValidation('signupCard');
+    clearFieldErrors();
+
+    const nameEl = document.getElementById('suName');
+    const emailEl = document.getElementById('suEmail');
+    const passEl = document.getElementById('suPass');
+    const roleEl = document.getElementById('suRole');
+
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim().toLowerCase();
+    const pass = passEl.value;
+    const role = roleEl?.value || 'external';
+
+    const missing = [];
+    if(!name) missing.push('full name');
+    if(!email) missing.push('email address');
+    if(!pass) missing.push('password');
+
+    if(!name) showFieldError(nameEl,);
+    if(!email) showFieldError(emailEl);
+    if(!pass) showFieldError(passEl);
+
+    if(missing.length) {
+      const message = missing.length === 1 
+        ? `Please enter your ${missing[0]}`
+        : `Please enter your ${missing.join(' and ')}`;
+      showValidation(message, 'error', 'signupCard');
+      return;
+    }
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRe.test(email)) {
+      showFieldError(emailEl, 'Enter a valid email address');
+      showValidation('Please enter a valid email address', 'error', 'signupCard');
+      return;
+    }
+
+    if(pass.length < 6) {
+      showFieldError(passEl, 'Must be at least 6 characters');
+      showValidation('Password must be at least 6 characters', 'error', 'signupCard');
+      return;
+    }
+
+    if(users.find(u => u.email.toLowerCase() === email)) {
+      showFieldError(emailEl, 'Email already exists');
+      showValidation('An account with this email already exists', 'error', 'signupCard');
+      return;
+    }
+
+    users.push({name, email, pass, role, points: 0});
+    saveUsers();
+    showValidation('Account created successfully!', 'success', 'signupCard');
+    setTimeout(openLogin, 1500);
+  }
+
+  function login() {
+    hideValidation('loginCard');
+    clearFieldErrors();
+
+    const emailEl = document.getElementById('liEmail');
+    const passEl = document.getElementById('liPass');
+    
+    const email = emailEl.value.trim().toLowerCase();
+    const pass = passEl.value;
+
+    const missing = [];
+    if(!email) missing.push('email');
+    if(!pass) missing.push('password');
+
+    if(!email) showFieldError(emailEl, 'Email is required');
+    if(!pass) showFieldError(passEl, 'Password is required');
+
+    if(missing.length) {
+      const message = missing.length === 1 
+        ? `Please enter your ${missing[0]}`
+        : `Please enter your ${missing.join(' and ')}`;
+      showValidation(message, 'error', 'loginCard');
+      return;
+    }
+
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRe.test(email)) {
+      showFieldError(emailEl, 'Enter a valid email');
+      showValidation('Please enter a valid email address', 'error', 'loginCard');
+      return;
+    }
+
+    const user = users.find(u => u.email.toLowerCase() === email);
+    if(!user || user.pass !== pass) {
+      showFieldError(emailEl, ' ');
+      showFieldError(passEl, ' ');
+      showValidation('Invalid email or password', 'error', 'loginCard');
+      return;
+    }
+
+    const session = {
+      name: user.name,
+      email: user.email,
+      role: user.role || 'external',
+      loginAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('currentUser', JSON.stringify(session));
+    if(!document.getElementById('remember').checked) {
+      sessionStorage.setItem('currentUser', JSON.stringify(session));
+    }
+
+    showValidation('Login successful...', 'success', 'loginCard');
+    setTimeout(() => {
+      if(user.role === 'hr') window.location.href = 'hr-dashboard.html';
+      else if(user.role === 'external') window.location.href = 'external.html';
+      else window.location.href = 'internal.html';
+    }, 1000);
+  }
+
+  function openSignup() {
+    clearForm('login');
+    hideValidation('loginCard');
+    clearFieldErrors();
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('signupCard').style.display = 'block';
+  }
+
+  function openLogin() {
+    clearForm('signup');
+    hideValidation('signupCard'); 
+    clearFieldErrors();
+    document.getElementById('signupCard').style.display = 'none';
+    document.getElementById('loginCard').style.display = 'block';
+  }
+
+  function clearForm(which) {
+    if(which === 'login') {
+      document.getElementById('liEmail').value = '';
+      document.getElementById('liPass').value = '';
+    } else {
+      document.getElementById('suName').value = '';
+      document.getElementById('suEmail').value = '';
+      document.getElementById('suPass').value = '';
+      document.getElementById('suRole').value = 'external';
+    }
+  }
+
+  function clearCurrent() {
+    localStorage.removeItem('currentUser');
+    sessionStorage.removeItem('currentUser');
+    showValidation('Session cleared', 'success', 'loginCard');
+  }
+
+  // Clear validation on input
+  document.querySelectorAll('.input').forEach(input => {
+    input.addEventListener('input', () => {
+      input.classList.remove('error');
+      const errorEl = input.nextElementSibling;
+      if(errorEl && errorEl.classList.contains('field-error')) {
+        errorEl.style.display = 'none';
+      }
+      hideValidation(input.closest('.card').id);
+    });
+  });
+
+  // Password toggles
+  document.getElementById('toggleLoginPass').addEventListener('click', () => {
+    const el = document.getElementById('liPass');
+    el.type = el.type === 'password' ? 'text' : 'password';
+    document.getElementById('toggleLoginPass').textContent = el.type === 'password' ? 'Show' : 'Hide';
+  });
+
+  document.getElementById('toggleSignupPass').addEventListener('click', () => {
+    const el = document.getElementById('suPass');
+    el.type = el.type === 'password' ? 'text' : 'password';
+    document.getElementById('toggleSignupPass').textContent = el.type === 'password' ? 'Show' : 'Hide';
+  });
+</script>
+</body>
+</html>
